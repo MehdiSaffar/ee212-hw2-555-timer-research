@@ -2,6 +2,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{verbatim}
 \usepackage{cite}
+\usepackage{graphicx}
+\usepackage{hyperref}
 
 \title{EE212 \\ Homework 2 --  555 Timer}
 \author{Mehdi Saffar -- 2016400411}
@@ -9,27 +11,67 @@
 
 \begin{document}
 \maketitle
-\section{Project Description}
-Make the famous memorization game `Find the Pair' where the player is shown the back of the cards, and has to flip the corresponding pairs to get rid of them. Score is calculated from how many tries it took to remove all pairs from the deck.
-\section{How it works}
-We used the Qt framework for C++ to make the UI. First we initialize the window. The window's root layout is a
-vertical layout. The lower part of it is the 4x6 grid layout for the cards. The top one contains the information for `Pairs', `Tries' and a reset button, that are layed out with the help of an horizontal layout.
+\section{What is the 555 timer?}
+The 555 timer is a very useful electronic component that is used in almost all circuits that required some sort of time control. It was designed by Hans Camenzing and introduced in 1971 by the American company Signetics. It is so popular that a billion units were manufactured back in 2003 alone. Its name come from the fact that it internally uses three 5k$\Omega$ rsistors to generate two comparators reference voltage (voltage divider).
 
-The buttons (and their corresponding "data cells") are generated programmatically with two nested for loops.
-At the time of creation, the button click callback is connected like this.
+\section{What does it look like?}
+\begin{center}
+\includegraphics[width=8cm]{form.png}
+\end{center}
+Internally, it is constituted of a voltage divider current (the three resistors), two comparators, a flip-flop and a high current output stage. It is made of about 25 transistors, 2 diodes and 16 resistors in total. It comes in a bipolar 8-pin DIP package. The pin specification is as follows:
+\begin{center}
+\begin{tabular}{|c|c|p{10cm}|}
+\hline
+\textbf{\#} & \textbf{Name} & \textbf{Description}\\
+\hline
+1 & Ground & Ground reference voltage, low level (0 V)\\
+\hline
+2 & Trigger & The OUT pin goes high and a timing interval starts when this input falls below 1/2 of CTRL voltage (which is typically 1/3 Vcc, CTRL being 2/3 Vcc by default if CTRL is left open). In other words, OUT is high as long as the trigger low. Output of the timer totally depends upon the amplitude of the external trigger voltage applied to this pin.\\
+\hline
+3 & Output & This output is driven to approximately 1.7 V below +Vcc, or to GND.\\
+\hline
+4 & Reset & A timing interval may be reset by driving this input to GND, but the timing does not begin again until RESET rises above approximately 0.7 volts. Overrides TRIG which overrides threshold.\\
+\hline
+5 & Control & Provides “control” access to the internal voltage divider (by default, 2/3 Vcc).\\
+\hline
+6 & Threshold & The timing (OUT high) interval ends when the voltage at threshold is greater than that at CTRL (2/3 Vcc if CTRL is open).\\
+\hline
+7 & Discharge & Open collector output which may discharge a capacitor between intervals. In phase with output.\\
+\hline
+8 & Vcc & Positive supply voltage, which is usually between 3 and 15 V depending on the variation.\\
+\hline
+\end{tabular}
+\end{center}
+\section{What is nice about it?}
+The 555 timer has multiple benefits. It is a cheap, extremely robust and precise timing 8-pin device. It can work as a simple timer to generate single pulses, or as an oscillator. It has a wide range of power (from +5V to +18V) and can drive a transistor-transistor logic (TTL) due its high current output. In fact, it can sink/source current up to 200mA. It is highly stable in temperature (temperature stability in the order of 50 parts per million per degree Celsius change in temperature!). It's timer duty cycle can be adjusted from 50% to 100%, and the maximum power dissipation per package is 600mW.
 
-The reason for doing it with lambda expressions is because handleButtonClicked must know which button was pressed. The
-most straightforward way to do that is to attach that information in the connect directly.
+The most common usage is a simple astable oscillator. It is made so by connecting two resistors and a capaacitor across its terminals to generate a fixed pulse train with a time period determined by the time constant of the RC network.
 
-If this is the first button to be clicked, we reveal the card behind it, and store it as `previousClickedButton'. This is
-because the second pressed button will determine whether they are matching pair or not.
-If the cards match then we simply hide the buttons. In order not to have the hidden buttons "squash" under the remaining visible buttons,
-we had to set the `sizePolicy' of each button so that it keeps its original square size even when hidden like this:
+Depending on the circuit configuration around it, the 555 timer can be in four modes:
+\begin{itemize}
+  \item Astable: No stable level at the output. It will be swinging between high and low.
+  \item Monostable: Negative trigger pulse produces a high pulse of certain width then back to low.
+  The time delay or output pulse width of a monostable 555 timer is determined by the time constant of the connected RC network. The tiemr circuit will remain in low state indefinitely. That is why it is called monostable.
+  \item Bistable Negative trigger pulse to start, another one to end. The timer circuit will remain in either state indefinitely. That is why it is called Bistable
+  \item Oscillator
+\end{itemize}
 
-When the buttons don't match, we show the cards for a short period of time then hide it. To achieve this, we used a little
-bit of asynchronous programming with QTimer.
-The levels are generated randomly on every game begin with this simple method.
 
-Every time a pair is matched or unmatched, the `Pairs' and `Tries' counters are updated.
-When the reset button is pressed, the level is regenerated.
+
+
+
+
+\section{Sources}
+Sources:
+\begin{itemize}
+  \item \url{https://www.electronics-tutorials.ws/waveforms/555_timer.html}
+  \item \url{https://www.electronics-tutorials.ws/waveforms/555_oscillator.html}
+  \item \url{https://electronicsforu.com/resources/learn-electronics/555-timer-working-specifications}
+\end{itemize}
+Video sources:
+\begin{itemize}
+  \item \url{https://www.youtube.com/watch?v=i0SNb__dkYI}
+  \item \url{https://www.youtube.com/watch?v=fLaexx-NMj8}
+  \item \url{https://www.youtube.com/watch?v=WqGq9Yv1d_U&t=470s}
+\end{itemize}
 \end{document}
