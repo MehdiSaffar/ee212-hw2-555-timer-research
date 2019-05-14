@@ -1,0 +1,35 @@
+\documentclass[12pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{cite}
+
+\title{EE212 \\ Homework 2 --  555 Timer}
+\author{Mehdi Saffar -- 2016400411}
+\date{May 2019}
+
+\begin{document}
+\maketitle
+\section{Project Description}
+Make the famous memorization game `Find the Pair' where the player is shown the back of the cards, and has to flip the corresponding pairs to get rid of them. Score is calculated from how many tries it took to remove all pairs from the deck.
+\section{How it works}
+We used the Qt framework for C++ to make the UI. First we initialize the window. The window's root layout is a
+vertical layout. The lower part of it is the 4x6 grid layout for the cards. The top one contains the information for `Pairs', `Tries' and a reset button, that are layed out with the help of an horizontal layout.
+
+The buttons (and their corresponding "data cells") are generated programmatically with two nested for loops.
+At the time of creation, the button click callback is connected like this.
+
+The reason for doing it with lambda expressions is because handleButtonClicked must know which button was pressed. The
+most straightforward way to do that is to attach that information in the connect directly.
+
+If this is the first button to be clicked, we reveal the card behind it, and store it as `previousClickedButton'. This is
+because the second pressed button will determine whether they are matching pair or not.
+If the cards match then we simply hide the buttons. In order not to have the hidden buttons "squash" under the remaining visible buttons,
+we had to set the `sizePolicy' of each button so that it keeps its original square size even when hidden like this:
+
+When the buttons don't match, we show the cards for a short period of time then hide it. To achieve this, we used a little
+bit of asynchronous programming with QTimer.
+The levels are generated randomly on every game begin with this simple method.
+
+Every time a pair is matched or unmatched, the `Pairs' and `Tries' counters are updated.
+When the reset button is pressed, the level is regenerated.
+\end{document}
